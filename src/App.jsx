@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Chatbot from "./components/Chatbot/Chatbot.jsx";
-import { HERO_BACKGROUND_MP4, isDrivePreviewUrl, PORTFOLIO_VIDEOS } from "./config/videos.js";
+import HeroBackground from "./components/HeroBackground.jsx";
+import { isDrivePreviewUrl, PORTFOLIO_VIDEOS } from "./config/videos.js";
 
 const VIDEOS = PORTFOLIO_VIDEOS;
 
@@ -182,8 +183,6 @@ const css = `
 
   #hero { position: relative; height: 100vh; min-height: 600px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; overflow: hidden; }
   .hero-video-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; overflow: hidden; }
-  .hero-video-bg video { width: 100%; height: 100%; object-fit: cover; pointer-events: none; display: block; }
-  .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.8)); pointer-events: none; }
   .hero-content { position: relative; z-index: 2; max-width: 820px; padding: 0 2rem; }
   .hero-eyebrow { font-size: 0.72rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; opacity: 0; animation: fadeUp 0.9s var(--ease) 0.3s forwards; }
   .hero-title { font-family: var(--font-display); font-size: clamp(2.3rem, 5.3vw, 4.8rem); font-weight: 300; line-height: 1.08; letter-spacing: -0.01em; color: var(--white); margin-bottom: 1.5rem; opacity: 0; animation: fadeUp 0.9s var(--ease) 0.5s forwards; }
@@ -335,17 +334,7 @@ function Hero({ t }) {
 
   return (
     <section id="hero">
-      <div className="hero-video-bg" aria-hidden="true">
-        <video
-          src={HERO_BACKGROUND_MP4}
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-        />
-        <div className="hero-overlay" />
-      </div>
+      <HeroBackground />
       <div className="hero-content">
         <p className="hero-eyebrow">{t.hero.eyebrow}</p>
         <h1 className="hero-title">

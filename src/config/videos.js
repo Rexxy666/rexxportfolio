@@ -67,7 +67,3 @@ export const PORTFOLIO_VIDEOS = [
     url: VIDEO_ASSETS.guBao,
   },
 ];
-
-/** Direct MP4 stream for hero background — native <video>, autoplay + object-fit: cover. */
-export const HERO_BACKGROUND_MP4 =
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
