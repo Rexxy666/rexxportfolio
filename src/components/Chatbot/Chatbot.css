@@ -1,0 +1,509 @@
+.chatbot-root {
+  --chat-glass: rgba(28, 28, 30, 0.85);
+  --chat-surface: rgba(44, 44, 46, 0.55);
+  --chat-border: rgba(255, 255, 255, 0.1);
+  --chat-text: #f5f5f7;
+  --chat-muted: rgba(235, 235, 245, 0.55);
+  --chat-accent: #0a84ff;
+  --chat-accent-dim: rgba(10, 132, 255, 0.14);
+  --silver-bright: #ffffff;
+  --silver-light: #e2e8f0;
+  --silver-mid: #cbd5e1;
+  --silver-deep: #94a3b8;
+  --chat-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --chat-radius: 20px;
+  position: fixed;
+  z-index: 260;
+  width: 64px;
+  height: 64px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    var(--font-body, "DM Sans"), sans-serif;
+  touch-action: none;
+}
+
+/* ── Minimal Agent Rex launcher ── */
+
+.agent-rex-launcher {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.35s var(--chat-ease);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.agent-rex-launcher__float {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: agentRexFloat 4.5s ease-in-out infinite;
+}
+
+.agent-rex-launcher:hover:not(.is-dragging) {
+  transform: scale(1.05);
+}
+
+.agent-rex-launcher:hover:not(.is-dragging) .agent-rex-launcher__float {
+  animation-play-state: paused;
+}
+
+.agent-rex-launcher:hover:not(.is-dragging) .agent-rex-icon__sphere {
+  filter: brightness(1.1);
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.38),
+    0 2px 6px rgba(148, 163, 184, 0.25),
+    inset 0 1px 1px rgba(255, 255, 255, 0.85),
+    inset 0 -3px 8px rgba(100, 116, 139, 0.35);
+}
+
+.agent-rex-launcher.is-open:not(.is-dragging) {
+  transform: scale(0.94);
+}
+
+.agent-rex-launcher.is-open .agent-rex-launcher__float {
+  animation-play-state: paused;
+}
+
+.agent-rex-launcher.is-dragging {
+  cursor: grabbing;
+  transform: scale(1.02);
+}
+
+.agent-rex-launcher.is-dragging .agent-rex-launcher__float {
+  animation-play-state: paused;
+}
+
+.agent-rex-icon {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  display: block;
+}
+
+.agent-rex-icon--mini {
+  width: 32px;
+  height: 32px;
+}
+
+.agent-rex-icon__sphere {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.32),
+    0 1px 3px rgba(148, 163, 184, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.72),
+    inset 0 -3px 8px rgba(100, 116, 139, 0.28);
+  transition: filter 0.35s var(--chat-ease), box-shadow 0.35s var(--chat-ease);
+}
+
+.agent-rex-icon__base {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 28% 22%, var(--silver-bright) 0%, transparent 22%),
+    radial-gradient(circle at 78% 82%, var(--silver-deep) 0%, transparent 38%),
+    linear-gradient(135deg, var(--silver-light) 0%, var(--silver-mid) 42%, var(--silver-deep) 100%);
+}
+
+.agent-rex-icon__sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.12) 28%,
+    transparent 52%,
+    rgba(148, 163, 184, 0.18) 100%
+  );
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+.agent-rex-icon__highlight {
+  position: absolute;
+  top: 10%;
+  left: 18%;
+  width: 34%;
+  height: 22%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(255, 255, 255, 0.2) 55%,
+    transparent 100%
+  );
+  transform: rotate(-18deg);
+  pointer-events: none;
+}
+
+@keyframes agentRexFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+/* ── Glass chat panel ── */
+
+.chatbot-panel {
+  position: absolute;
+  right: 0;
+  width: min(400px, calc(100vw - 2rem));
+  height: min(580px, calc(100vh - 8rem));
+  display: flex;
+  flex-direction: column;
+  background: var(--chat-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--chat-border);
+  border-radius: var(--chat-radius);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.45),
+    0 0 0 0.5px rgba(255, 255, 255, 0.06) inset;
+  transform-origin: bottom right;
+  transform: scale(0.92) translateY(10px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.38s var(--chat-ease), opacity 0.32s var(--chat-ease);
+  overflow: hidden;
+}
+
+.chatbot-panel.open {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.chatbot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.15rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.chatbot-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.chatbot-header-icon {
+  display: flex;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.chatbot-header-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+
+.chatbot-header-title strong {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--chat-text);
+}
+
+.chatbot-header-title span {
+  font-size: 0.72rem;
+  letter-spacing: 0.01em;
+  color: var(--chat-muted);
+}
+
+.chatbot-header-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.chatbot-icon-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: none;
+  border-radius: 10px;
+  color: var(--chat-muted);
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.chatbot-icon-btn:hover {
+  color: var(--chat-text);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.chatbot-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  scroll-behavior: smooth;
+}
+
+.chatbot-body::-webkit-scrollbar {
+  width: 5px;
+}
+
+.chatbot-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 99px;
+}
+
+.chat-msg {
+  max-width: 88%;
+  padding: 0.8rem 1rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  border-radius: 18px;
+  animation: chatFadeIn 0.32s var(--chat-ease);
+}
+
+.chat-msg.user {
+  align-self: flex-end;
+  background: rgba(10, 132, 255, 0.22);
+  border: 1px solid rgba(10, 132, 255, 0.28);
+  color: var(--chat-text);
+}
+
+.chat-msg.assistant {
+  align-self: flex-start;
+  background: var(--chat-surface);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--chat-text);
+}
+
+.chat-msg.assistant .chat-md-pre {
+  margin: 0.5rem 0 0;
+  padding: 0.65rem 0.75rem;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  overflow-x: auto;
+  font-size: 0.82rem;
+}
+
+.chat-msg.assistant .chat-md-inline {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  font-size: 0.88em;
+}
+
+.chat-msg.assistant a {
+  color: #64d2ff;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.chat-msg.assistant strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.chat-msg.assistant p {
+  margin: 0 0 0.5rem;
+}
+
+.chat-msg.assistant p:last-child {
+  margin-bottom: 0;
+}
+
+.chat-msg.assistant ul,
+.chat-msg.assistant ol {
+  margin: 0.35rem 0 0.5rem 1.1rem;
+}
+
+.chat-typing {
+  display: inline-flex;
+  gap: 5px;
+  padding: 0.2rem 0;
+}
+
+.chat-typing span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(235, 235, 245, 0.55);
+  animation: chatBounce 1.2s ease-in-out infinite;
+}
+
+.chat-typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.chat-typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.chatbot-error {
+  font-size: 0.8rem;
+  color: #ff9f0a;
+  padding: 0 1.1rem 0.35rem;
+}
+
+.chatbot-hint {
+  color: #64d2ff;
+  opacity: 0.92;
+}
+
+.chatbot-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0 1.1rem 0.75rem;
+}
+
+.chatbot-chip {
+  background: rgba(255, 255, 255, 0.06);
+  border: none;
+  border-radius: 999px;
+  color: var(--chat-muted);
+  font-size: 0.78rem;
+  padding: 0.45rem 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.chatbot-chip:hover:not(:disabled) {
+  color: var(--chat-text);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.chatbot-chip:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.chatbot-footer {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.65rem;
+  padding: 0.85rem 1rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.chatbot-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  color: var(--chat-text);
+  padding: 12px 16px;
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+  resize: none;
+  min-height: 52px;
+  max-height: 132px;
+  line-height: 1.45;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.chatbot-input:focus {
+  border-color: rgba(10, 132, 255, 0.45);
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.chatbot-input::placeholder {
+  color: rgba(235, 235, 245, 0.35);
+}
+
+.chatbot-send {
+  flex-shrink: 0;
+  padding: 0 1.25rem;
+  min-height: 52px;
+  background: #ebebf0;
+  border: none;
+  border-radius: 14px;
+  color: #1c1c1e;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.chatbot-send:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+.chatbot-send:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+@keyframes chatFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes chatBounce {
+  0%,
+  80%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.35;
+  }
+  40% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .chatbot-root {
+    width: 58px;
+    height: 58px;
+  }
+
+  .chatbot-panel {
+    width: calc(100vw - 1.5rem);
+    height: min(72vh, 540px);
+    border-radius: 18px;
+  }
+
+  .agent-rex-launcher {
+    width: 58px;
+    height: 58px;
+  }
+
+  .agent-rex-icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .chatbot-input {
+    font-size: 16px;
+  }
+}
