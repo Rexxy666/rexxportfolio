@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { apiUrl } from "../../config/api.js";
 import { useChatStream } from "../../hooks/useChatStream";
 import MarkdownMessage from "./MarkdownMessage";
 import "./Chatbot.css";
@@ -161,7 +162,7 @@ export default function Chatbot({ lang = "en" }) {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch("/api/health");
+        const res = await fetch(apiUrl("/api/health"));
         if (!res.ok) throw new Error("health");
         const data = await res.json();
         if (cancelled) return;

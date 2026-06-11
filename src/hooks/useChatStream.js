@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { apiUrl } from "../config/api.js";
 
 function toApiMessages(messages, userText) {
   const history = messages
@@ -57,7 +58,7 @@ export function useChatStream() {
     setMessages([...nextMessages, assistantPlaceholder]);
 
     try {
-      const response = await fetch("/api/chat", {
+      const response = await fetch(apiUrl("/api/chat"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: apiMessages }),
@@ -70,7 +71,9 @@ export function useChatStream() {
           const data = JSON.parse(raw);
           detail = data.error || detail;
         } catch {
-          if (response.status === 502 || response.status === 504) {
+          if (response.status === 404) {
+            detail = "AI 後端路由不存在（404）。請確認後端 Web Service 已部署且網址正確。";
+          } else if (response.status === 502 || response.status === 504) {
             detail =
               "無法連線到 AI 後端。請在專案根目錄執行 npm run dev（會同時啟動網站與 API），不要只跑 vite。";
           } else if (raw) {
