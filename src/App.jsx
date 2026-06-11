@@ -1,56 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Chatbot from "./components/Chatbot/Chatbot.jsx";
+import { HERO_BACKGROUND_MP4, isDrivePreviewUrl, PORTFOLIO_VIDEOS } from "./config/videos.js";
 
-const VIDEOS = [
-  {
-    id: 1,
-    title: { en: "Shorts - Xtra", zh: "短影音 - 女王波" },
-    desc: { en: "1.2M views on YouTube", zh: "YouTube 觀看數 120 萬" },
-    thumb: "/videos/0606-cover.png",
-    url: "/videos/0606.mov",
-    isLocal: true,
-  },
-  {
-    id: 2,
-    title: { en: "Shorts - CrazyMike", zh: "短影音 - 瘋狂賣客" },
-    desc: { en: "Featured in annual report", zh: "收錄於年度報告" },
-    thumb: "/videos/0805-cover.jpg",
-    url: "/videos/0805.mov",
-    isLocal: true,
-  },
-  {
-    id: 3,
-    title: { en: "Event - CrazyMike", zh: "活動 - 瘋狂賣客" },
-    desc: { en: "4.8M organic impressions", zh: "自然曝光達 480 萬" },
-    thumb: "/videos/0106-cover.png",
-    url: "/videos/0106.mov",
-    isLocal: true,
-  },
-  {
-    id: 4,
-    title: { en: "Shorts - CrazyMike", zh: "短影音 - 瘋狂賣客" },
-    desc: { en: "Official conference recap", zh: "官方會議精華回顧" },
-    thumb: "/videos/fung.png",
-    url: "/videos/1218.mov",
-    isLocal: true,
-  },
-  {
-    id: 5,
-    title: { en: "Shorts - LADYME", zh: "短影音 - LADYME" },
-    desc: { en: "2.1M TikTok plays in 48h", zh: "48 小時 TikTok 播放 210 萬" },
-    thumb: "/videos/0610-cover.jpg",
-    url: "/videos/0610.mp4",
-    isLocal: true,
-  },
-  {
-    id: 6,
-    title: { en: "Shorts - GuBao", zh: "短影音 - 古寶無患子" },
-    desc: { en: "Cannes Lions shortlisted", zh: "坎城創意節入圍作品" },
-    thumb: "/videos/zhaofu-pingan-cover.png",
-    url: "/videos/zhaofu-pingan.mov",
-    isLocal: true,
-  },
-];
+const VIDEOS = PORTFOLIO_VIDEOS;
 
 const SERVICES = [
   {
@@ -81,8 +33,6 @@ const SERVICES = [
     },
   },
 ];
-
-const HERO_VIDEO_POOL = VIDEOS.filter((video) => video.isLocal).map((video) => video.url);
 
 const TRANSLATIONS = {
   en: {
@@ -231,8 +181,9 @@ const css = `
   }
 
   #hero { position: relative; height: 100vh; min-height: 600px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; overflow: hidden; }
-  #hero video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.35; }
-  .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(8,8,8,0.3) 0%, rgba(8,8,8,0.6) 100%); }
+  .hero-video-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; overflow: hidden; }
+  .hero-video-bg video { width: 100%; height: 100%; object-fit: cover; pointer-events: none; display: block; }
+  .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.8)); pointer-events: none; }
   .hero-content { position: relative; z-index: 2; max-width: 820px; padding: 0 2rem; }
   .hero-eyebrow { font-size: 0.72rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; opacity: 0; animation: fadeUp 0.9s var(--ease) 0.3s forwards; }
   .hero-title { font-family: var(--font-display); font-size: clamp(2.3rem, 5.3vw, 4.8rem); font-weight: 300; line-height: 1.08; letter-spacing: -0.01em; color: var(--white); margin-bottom: 1.5rem; opacity: 0; animation: fadeUp 0.9s var(--ease) 0.5s forwards; }
@@ -381,42 +332,20 @@ function Nav({ scrolled, t, lang, setLang }) {
 
 function Hero({ t }) {
   const scroll = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-  const heroVideoRef = useRef(null);
-  const [heroVideoUrl, setHeroVideoUrl] = useState(() => HERO_VIDEO_POOL[0] ?? "");
-
-  useEffect(() => {
-    if (HERO_VIDEO_POOL.length <= 1) return undefined;
-
-    const timer = setInterval(() => {
-      setHeroVideoUrl((currentUrl) => {
-        const candidates = HERO_VIDEO_POOL.filter((url) => url !== currentUrl);
-        return candidates[Math.floor(Math.random() * candidates.length)] ?? currentUrl;
-      });
-    }, 10000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    const videoEl = heroVideoRef.current;
-    if (!videoEl) return undefined;
-
-    const setRandomStart = () => {
-      if (!Number.isFinite(videoEl.duration) || videoEl.duration <= 10) {
-        videoEl.currentTime = 0;
-        return;
-      }
-      videoEl.currentTime = Math.random() * (videoEl.duration - 10);
-    };
-
-    videoEl.addEventListener("loadedmetadata", setRandomStart);
-    return () => videoEl.removeEventListener("loadedmetadata", setRandomStart);
-  }, [heroVideoUrl]);
 
   return (
     <section id="hero">
-      <video ref={heroVideoRef} key={heroVideoUrl} autoPlay muted playsInline preload="metadata" src={heroVideoUrl} />
-      <div className="hero-overlay" />
+      <div className="hero-video-bg" aria-hidden="true">
+        <video
+          src={HERO_BACKGROUND_MP4}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+        />
+        <div className="hero-overlay" />
+      </div>
       <div className="hero-content">
         <p className="hero-eyebrow">{t.hero.eyebrow}</p>
         <h1 className="hero-title">
@@ -462,17 +391,23 @@ function Modal({ video, onClose, t, lang }) {
       <div className="modal-inner" onClick={(e) => e.stopPropagation()}>
         <button className="modal-close" onClick={onClose}>{t.portfolio.close}</button>
         <div className="modal-video-wrap">
-          {video.isLocal ? (
+          {isDrivePreviewUrl(video.url) ? (
+            <iframe
+              src={video.url}
+              title={video.title[lang]}
+              allow="autoplay; fullscreen"
+              allowFullScreen
+            />
+          ) : (
             <video
               src={video.url}
               title={video.title[lang]}
               controls
               autoPlay
               playsInline
+              preload="metadata"
               style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }}
             />
-          ) : (
-            <iframe src={`${video.url}?autoplay=1`} title={video.title[lang]} allow="autoplay; fullscreen" allowFullScreen />
           )}
         </div>
         <div className="modal-caption">
