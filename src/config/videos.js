@@ -20,6 +20,9 @@ export const VIDEO_ASSETS = {
 
   // Micro Film - Breaking Free (破繭)
   poJian: "https://drive.google.com/file/d/1cjD52lQCo0Zv9fwGTJrApeihYp-g-oIq/preview",
+
+  // Street Interview - Shih Hsin
+  streetInterviewShihHsin: "https://drive.google.com/file/d/1IwvQjmFm06C1LQ0qZbMcCkpxpJrMsrf7/preview",
 };
 
 export function isDrivePreviewUrl(url) {
@@ -64,6 +67,13 @@ export const PORTFOLIO_VIDEOS = [
   },
   {
     id: 6,
+    title: { en: "Street Interview - Shih Hsin", zh: "街訪 - 世新" },
+    desc: { en: "Street interview", zh: "街頭訪談" },
+    thumb: "https://drive.google.com/thumbnail?id=1IwvQjmFm06C1LQ0qZbMcCkpxpJrMsrf7&sz=w1200",
+    url: VIDEO_ASSETS.streetInterviewShihHsin,
+  },
+  {
+    id: 7,
     title: { en: "Award Film - New Taipei Advertisers", zh: "新北廣告人 - 獲獎影片" },
     desc: { en: "Award-winning film", zh: "獲獎作品" },
     thumb: "https://drive.google.com/thumbnail?id=1KASn2NgQig7-O1I3ycnd5b-SufD9st7H&sz=w1200",
@@ -71,7 +81,7 @@ export const PORTFOLIO_VIDEOS = [
     landscape: true,
   },
   {
-    id: 7,
+    id: 8,
     title: { en: "Award Film - Breaking Free", zh: "傳技展獲獎影片 - 破繭" },
     desc: { en: "16:9 micro film · Award winner", zh: "16:9 微電影 · 獲獎作品" },
     thumb: "https://drive.google.com/thumbnail?id=10j2Rih5xXoIK15ulFwjKARE5lEt0yKbT&sz=w1200",
