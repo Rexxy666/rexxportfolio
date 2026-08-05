@@ -33,6 +33,18 @@ const SERVICES = [
       zh: "從新品發表到大型會議，以電影感紀錄把一天活動轉化為可長期使用的行銷素材。",
     },
   },
+  {
+    icon: "layout",
+    title: { en: "Web Development & Digital Experiences", zh: "網站與數位體驗製作" },
+    tagline: {
+      en: "Crafting seamless digital experiences with modern web design.",
+      zh: "融合高質感視覺與極致流暢的互動體驗。",
+    },
+    desc: {
+      en: "From brand websites and interactive campaign pages to Web App development. We combine aesthetic design with modern front-end technology to build high-converting, memorable digital presence.",
+      zh: "從品牌形象官網、互動式 Campaign 頁面到 Web App 開發。我們結合美學設計與前沿前端技術，打造高轉換率且印象深刻的數位陣地。",
+    },
+  },
 ];
 
 function ServiceIcon({ name }) {
@@ -60,6 +72,14 @@ function ServiceIcon({ name }) {
       <svg {...props}>
         <rect x="6" y="2" width="12" height="20" rx="2.5" />
         <path d="M12 18h.01" />
+      </svg>
+    );
+  }
+  if (name === "layout") {
+    return (
+      <svg {...props}>
+        <rect x="3" y="3" width="18" height="18" rx="2" />
+        <path d="M3 9h18M9 21V9" />
       </svg>
     );
   }
@@ -138,8 +158,8 @@ const TRANSLATIONS = {
     },
     services: {
       label: "What We Do",
-      titleTop: "Full-Service",
-      titleBottom: "Visual Production",
+      titleTop: "Full-Service Visual &",
+      titleBottom: "Digital Production",
     },
     contact: {
       label: "Get In Touch",
@@ -163,6 +183,7 @@ const TRANSLATIONS = {
         "Brand & Corporate Film",
         "Short-Form Social Content",
         "Event Documentation",
+        "Web Development & Digital Experiences",
         "Other",
       ],
       projectDefault: "Select a service...",
@@ -199,8 +220,8 @@ const TRANSLATIONS = {
     },
     services: {
       label: "服務項目",
-      titleTop: "一站式",
-      titleBottom: "影像製作",
+      titleTop: "影音製作與",
+      titleBottom: "數位體驗",
     },
     contact: {
       label: "聯絡我們",
@@ -220,7 +241,7 @@ const TRANSLATIONS = {
       namePlaceholder: "王小明",
       emailPlaceholder: "you@company.com",
       msgPlaceholder: "請告訴我你的需求、時程與目標...",
-      projectOptions: ["品牌與企業影片", "社群短影音內容", "活動紀錄製作", "其他"],
+      projectOptions: ["品牌與企業影片", "社群短影音內容", "活動紀錄製作", "網站與數位體驗製作", "其他"],
       projectDefault: "請選擇服務...",
       uploadPrefix: "已選擇：",
     },
@@ -616,7 +637,13 @@ const css = `
     background: radial-gradient(ellipse at center, var(--gold-glow) 0%, transparent 68%);
   }
   #services .section-title { color: var(--white); }
-  .services-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr; gap: 16px; }
+  .services-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
   .service-card {
     padding: 3rem 2.5rem;
     background: var(--surface);
@@ -736,7 +763,7 @@ const css = `
     .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
     .portfolio-grid.landscape { grid-template-columns: repeat(2, 1fr); }
     .labs-grid { grid-template-columns: 1fr 1fr; }
-    .services-grid { grid-template-columns: 1fr; }
+    .services-grid { grid-template-columns: repeat(2, 1fr); }
     .contact-layout { grid-template-columns: 1fr; gap: 3rem; }
   }
   @media (max-width: 640px) {
