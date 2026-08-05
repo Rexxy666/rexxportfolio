@@ -4,12 +4,22 @@ import { useChatStream } from "../../hooks/useChatStream";
 import MarkdownMessage from "./MarkdownMessage";
 import "./Chatbot.css";
 
-const VIEWPORT_MARGIN = 10;
+const VIEWPORT_MARGIN_DESKTOP = 10;
+const VIEWPORT_MARGIN_MOBILE = 12;
 const DRAG_THRESHOLD = 5;
 const PANEL_GAP = 76;
 
+function isMobileViewport() {
+  return typeof window !== "undefined" && window.innerWidth <= 768;
+}
+
+function getViewportMargin() {
+  return isMobileViewport() ? VIEWPORT_MARGIN_MOBILE : VIEWPORT_MARGIN_DESKTOP;
+}
+
 function getOrbSize() {
-  return window.innerWidth <= 480 ? 58 : 64;
+  // Keep layout box at 64px; mobile CSS scales the visual to 0.75 from bottom-right.
+  return 64;
 }
 
 const COPY = {
@@ -49,19 +59,21 @@ const COPY = {
 
 function getDefaultPosition() {
   const size = getOrbSize();
+  const margin = getViewportMargin();
   return {
-    x: window.innerWidth - size - VIEWPORT_MARGIN,
-    y: window.innerHeight - size - VIEWPORT_MARGIN,
+    x: window.innerWidth - size - margin,
+    y: window.innerHeight - size - margin,
   };
 }
 
 function clampPosition({ x, y }) {
   const size = getOrbSize();
-  const maxX = window.innerWidth - size - VIEWPORT_MARGIN;
-  const maxY = window.innerHeight - size - VIEWPORT_MARGIN;
+  const margin = getViewportMargin();
+  const maxX = window.innerWidth - size - margin;
+  const maxY = window.innerHeight - size - margin;
   return {
-    x: Math.max(VIEWPORT_MARGIN, Math.min(x, maxX)),
-    y: Math.max(VIEWPORT_MARGIN, Math.min(y, maxY)),
+    x: Math.max(margin, Math.min(x, maxX)),
+    y: Math.max(margin, Math.min(y, maxY)),
   };
 }
 
