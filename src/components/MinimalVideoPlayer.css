@@ -1,0 +1,203 @@
+.mvp {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mvp__video,
+.mvp__iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  object-fit: contain;
+  background: #000;
+}
+
+.mvp__external {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 5;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.95rem;
+  line-height: 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, background 0.2s ease;
+}
+
+.mvp:hover .mvp__external,
+.mvp.show-controls .mvp__external,
+.mvp:not(.is-playing) .mvp__external {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mvp__external:hover {
+  background: rgba(0, 0, 0, 0.72);
+  color: #D4AF37;
+}
+
+/* Large center play — only when paused; scales down and stays centered */
+.mvp__center-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+  width: 56px;
+  height: 56px;
+  transform: translate(-50%, -50%) scale(0.85);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  backdrop-filter: blur(4px);
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.mvp.is-playing .mvp__center-play {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.7);
+}
+
+.mvp__center-play svg {
+  margin-left: 3px;
+}
+
+/* Slim bottom control bar — hidden by default while playing */
+.mvp__controls {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  z-index: 5;
+  box-sizing: border-box;
+  padding: 8px 12px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.mvp:hover .mvp__controls,
+.mvp.show-controls .mvp__controls,
+.mvp:not(.is-playing) .mvp__controls {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mvp__btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.mvp__btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.mvp__progress {
+  position: relative;
+  flex: 1;
+  height: 3px;
+  margin: 0 10px;
+  background: rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  border-radius: 999px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.mvp__progress-fill {
+  height: 100%;
+  background: #D4AF37;
+  width: 0;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.mvp__time {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.85);
+  font-variant-numeric: tabular-nums;
+  margin-right: 4px;
+  white-space: nowrap;
+}
+
+/* No rewind / CC / speed / settings — never rendered */
+.mvp__seek-back,
+.mvp__seek-forward,
+.mvp__cc,
+.mvp__speed,
+.mvp__settings {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .mvp__controls {
+    padding: 8px 12px;
+  }
+
+  .mvp__time {
+    font-size: 0.65rem;
+  }
+
+  .mvp__btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .mvp__progress {
+    height: 3px;
+    margin: 0 8px;
+  }
+
+  .mvp__center-play {
+    width: 52px;
+    height: 52px;
+    transform: translate(-50%, -50%) scale(0.85);
+  }
+}

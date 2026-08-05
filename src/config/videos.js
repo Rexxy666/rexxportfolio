@@ -29,6 +29,28 @@ export function isDrivePreviewUrl(url) {
   return typeof url === "string" && url.includes("drive.google.com/file/d/");
 }
 
+export function getDriveFileId(url) {
+  if (typeof url !== "string") return null;
+  const match = url.match(/\/file\/d\/([^/]+)/);
+  return match?.[1] ?? null;
+}
+
+export function getDrivePreviewUrl(url) {
+  const id = getDriveFileId(url);
+  return id ? `https://drive.google.com/file/d/${id}/preview` : url;
+}
+
+/** Best-effort direct stream URL for public Drive files (falls back to iframe if blocked). */
+export function getDriveStreamUrl(url) {
+  const id = getDriveFileId(url);
+  return id ? `https://drive.google.com/uc?export=download&id=${id}` : url;
+}
+
+export function getDriveViewUrl(url) {
+  const id = getDriveFileId(url);
+  return id ? `https://drive.google.com/file/d/${id}/view` : url;
+}
+
 export const PORTFOLIO_VIDEOS = [
   {
     id: 1,

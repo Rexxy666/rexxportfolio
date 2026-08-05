@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Chatbot from "./components/Chatbot/Chatbot.jsx";
 import HeroBackground from "./components/HeroBackground.jsx";
-import { isDrivePreviewUrl, PORTFOLIO_VIDEOS } from "./config/videos.js";
+import MinimalVideoPlayer from "./components/MinimalVideoPlayer.jsx";
+import { PORTFOLIO_VIDEOS } from "./config/videos.js";
 
 const VIDEOS = PORTFOLIO_VIDEOS;
 
@@ -600,17 +602,85 @@ const css = `
   }
   .lab-cta svg { width: 14px; height: 14px; flex-shrink: 0; }
 
-  .modal-backdrop { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.96); display: flex; align-items: center; justify-content: center; animation: fadeIn 0.25s var(--ease); padding: 2rem; }
-  .modal-inner { position: relative; width: 100%; max-width: 420px; animation: scaleIn 0.3s var(--ease); }
-  .modal-inner.landscape { max-width: 960px; }
-  .modal-video-wrap { position: relative; padding-top: 177.78%; background: #000; border-radius: 8px; overflow: hidden; }
-  .modal-inner.landscape .modal-video-wrap { padding-top: 56.25%; }
-  .modal-video-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
-  .modal-caption { padding: 1.2rem 0 0; }
-  .modal-caption h3 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 400; }
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+    animation: fadeIn 0.25s var(--ease);
+  }
+  .modal-inner {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    max-height: 75vh;
+    display: flex;
+    flex-direction: column;
+    animation: scaleIn 0.3s var(--ease);
+    background: transparent;
+    border: none;
+    border-radius: 12px;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  .modal-inner.landscape {
+    max-width: min(960px, 100%);
+    max-height: 85vh;
+  }
+  .modal-video-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    max-height: calc(75vh - 56px);
+    margin: 0 auto;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .modal-inner.landscape .modal-video-wrap {
+    aspect-ratio: 16 / 9;
+    max-height: calc(85vh - 56px);
+    width: 100%;
+  }
+  .modal-caption {
+    padding: 0.75rem 0.25rem 0;
+    flex-shrink: 0;
+    text-align: center;
+  }
+  .modal-caption h3 { font-family: var(--font-display); font-size: 1.15rem; font-weight: 400; }
   .modal-caption p { color: var(--gold); font-size: 0.82rem; margin-top: 0.3rem; }
-  .modal-close { position: absolute; top: -3rem; right: 0; background: none; border: none; color: var(--muted); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; transition: color 0.2s; }
-  .modal-close:hover { color: var(--white); }
+  .modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 1000;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: none;
+    border-radius: 50%;
+    color: var(--white);
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.2s, background 0.2s;
+  }
+  .modal-close:hover { color: var(--gold); background: rgba(0, 0, 0, 0.72); }
+  body.modal-open { overflow: hidden !important; }
   .policy-modal-backdrop { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
   .policy-modal-inner { width: min(900px, 100%); max-height: 88vh; overflow: auto; background: var(--surface); border: 1px solid var(--border); padding: 1.5rem; border-radius: 8px; }
   .policy-modal-title { font-family: var(--font-display); font-size: 1.7rem; margin-bottom: 0.7rem; color: var(--white); }
@@ -1117,35 +1187,31 @@ const css = `
       line-height: 1.4;
       opacity: 0.6;
       margin-top: 16px;
+      margin-bottom: 40px;
     }
 
     .modal-backdrop {
       padding: 16px;
       align-items: center;
+      justify-content: center;
     }
-    .modal-inner,
+    .modal-inner {
+      width: 100%;
+      max-width: 480px;
+      max-height: 75vh;
+      padding: 0;
+    }
     .modal-inner.landscape {
-      width: 92%;
-      max-width: 500px;
-      padding: 16px;
-      border-radius: 12px;
-      background: rgba(18, 18, 20, 0.96);
-      box-sizing: border-box;
+      max-width: min(960px, 100%);
+      max-height: 85vh;
     }
-    .modal-video-wrap { border-radius: 10px; }
     .modal-close {
-      top: 10px;
-      right: 10px;
-      z-index: 1000;
-      padding: 0.4rem 0.65rem;
-      background: rgba(0, 0, 0, 0.55);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 999px;
-      color: var(--white);
-      backdrop-filter: blur(8px);
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
     }
-    .modal-caption { padding-top: 0.9rem; }
-    .modal-caption h3 { font-size: 1.2rem; }
+    .modal-caption h3 { font-size: 1.05rem; }
   }
 `;
 
@@ -1217,42 +1283,41 @@ function PortfolioItem({ video, onClick, lang }) {
 
 function Modal({ video, onClose, t, lang }) {
   useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.body.classList.add("modal-open");
     const esc = (e) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", esc);
-    return () => window.removeEventListener("keydown", esc);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.body.classList.remove("modal-open");
+      window.removeEventListener("keydown", esc);
+    };
   }, [onClose]);
-  return (
-    <div className="modal-backdrop" onClick={onClose}>
+
+  return createPortal(
+    <div className="modal-backdrop" onClick={onClose} role="dialog" aria-modal="true">
       <div
         className={`modal-inner${video.landscape ? " landscape" : ""}`}
         onClick={(e) => e.stopPropagation()}
       >
-        <button className="modal-close" onClick={onClose}>{t.portfolio.close}</button>
+        <button type="button" className="modal-close" onClick={onClose} aria-label={t.portfolio.close}>
+          ✕
+        </button>
         <div className="modal-video-wrap">
-          {isDrivePreviewUrl(video.url) ? (
-            <iframe
-              src={video.url}
-              title={video.title[lang]}
-              allow="autoplay; fullscreen"
-              allowFullScreen
-            />
-          ) : (
-            <video
-              src={video.url}
-              title={video.title[lang]}
-              controls
-              autoPlay
-              playsInline
-              preload="metadata"
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }}
-            />
-          )}
+          <MinimalVideoPlayer
+            src={video.url}
+            poster={video.thumb}
+            title={video.title[lang]}
+            landscape={Boolean(video.landscape)}
+          />
         </div>
         <div className="modal-caption">
           <h3>{video.title[lang]}</h3>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
