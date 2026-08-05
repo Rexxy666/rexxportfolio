@@ -207,8 +207,11 @@ const css = `
 
   #portfolio { background: var(--bg); }
   #portfolio .section-sub { text-align: left; margin-left: 0; margin-right: 0; }
+  .portfolio-grids { display: flex; flex-direction: column; gap: 1.5px; }
   .portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5px; }
+  .portfolio-grid.landscape { grid-template-columns: repeat(2, 1fr); }
   .portfolio-item { position: relative; aspect-ratio: 9/16; overflow: hidden; cursor: pointer; background: #111; }
+  .portfolio-item.landscape { aspect-ratio: 16/9; }
   .portfolio-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease), filter 0.4s; filter: brightness(0.7) saturate(0.8); }
   .portfolio-item:hover img { transform: scale(1.06); filter: brightness(0.5) saturate(0.6); }
   .portfolio-item-info { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 1.4rem; background: linear-gradient(to top, rgba(8,8,8,0.92) 0%, transparent 55%); opacity: 0; transition: opacity 0.35s var(--ease); }
@@ -221,7 +224,9 @@ const css = `
 
   .modal-backdrop { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.96); display: flex; align-items: center; justify-content: center; animation: fadeIn 0.25s var(--ease); padding: 2rem; }
   .modal-inner { position: relative; width: 100%; max-width: 420px; animation: scaleIn 0.3s var(--ease); }
+  .modal-inner.landscape { max-width: 960px; }
   .modal-video-wrap { position: relative; padding-top: 177.78%; background: #000; }
+  .modal-inner.landscape .modal-video-wrap { padding-top: 56.25%; }
   .modal-video-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
   .modal-caption { padding: 1.2rem 0 0; }
   .modal-caption h3 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 400; }
@@ -293,12 +298,14 @@ const css = `
   @media (max-width: 1024px) {
     nav { padding: 1.2rem 2rem; } section { padding: 5rem 2rem; } footer { padding: 2rem; }
     .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
+    .portfolio-grid.landscape { grid-template-columns: repeat(2, 1fr); }
     .services-grid { grid-template-columns: 1fr; }
     .contact-layout { grid-template-columns: 1fr; gap: 3rem; }
   }
   @media (max-width: 640px) {
     .nav-links { display: none; }
-    .portfolio-grid { grid-template-columns: 1fr; }
+    .portfolio-grid,
+    .portfolio-grid.landscape { grid-template-columns: 1fr; }
     .services-grid { grid-template-columns: 1fr; }
     .form-row { grid-template-columns: 1fr; }
     .hero-ctas { flex-direction: column; align-items: center; }
@@ -357,7 +364,10 @@ function Hero({ t }) {
 
 function PortfolioItem({ video, onClick, lang }) {
   return (
-    <div className="portfolio-item reveal" onClick={() => onClick(video)}>
+    <div
+      className={`portfolio-item reveal${video.landscape ? " landscape" : ""}`}
+      onClick={() => onClick(video)}
+    >
       <img src={video.thumb} alt={video.title[lang]} loading="lazy" />
       <div className="play-icon">
         <svg width="14" height="16" viewBox="0 0 14 16" fill="white"><path d="M1 1l12 7-12 7V1z" /></svg>
@@ -377,7 +387,10 @@ function Modal({ video, onClose, t, lang }) {
   }, [onClose]);
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-inner" onClick={(e) => e.stopPropagation()}>
+      <div
+        className={`modal-inner${video.landscape ? " landscape" : ""}`}
+        onClick={(e) => e.stopPropagation()}
+      >
         <button className="modal-close" onClick={onClose}>{t.portfolio.close}</button>
         <div className="modal-video-wrap">
           {isDrivePreviewUrl(video.url) ? (
@@ -409,6 +422,8 @@ function Modal({ video, onClose, t, lang }) {
 
 function Portfolio({ t, lang }) {
   const [active, setActive] = useState(null);
+  const portraitVideos = VIDEOS.filter((v) => !v.landscape);
+  const landscapeVideos = VIDEOS.filter((v) => v.landscape);
   return (
     <section id="portfolio">
       <div className="section-header">
@@ -417,8 +432,19 @@ function Portfolio({ t, lang }) {
         <div className="divider reveal" />
         <p className="section-sub reveal">{t.portfolio.sub}</p>
       </div>
-      <div className="portfolio-grid">
-        {VIDEOS.map((v) => <PortfolioItem key={v.id} video={v} onClick={setActive} lang={lang} />)}
+      <div className="portfolio-grids">
+        <div className="portfolio-grid">
+          {portraitVideos.map((v) => (
+            <PortfolioItem key={v.id} video={v} onClick={setActive} lang={lang} />
+          ))}
+        </div>
+        {landscapeVideos.length > 0 && (
+          <div className="portfolio-grid landscape">
+            {landscapeVideos.map((v) => (
+              <PortfolioItem key={v.id} video={v} onClick={setActive} lang={lang} />
+            ))}
+          </div>
+        )}
       </div>
       {active && <Modal video={active} onClose={() => setActive(null)} t={t} lang={lang} />}
     </section>
